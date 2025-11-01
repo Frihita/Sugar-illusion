@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sweet Illusion — The Sugar Truth Board</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0012 0%, #2a0054 100%);
+            font-family: 'Poppins', sans-serif;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Sugar Crystal Particles */
+        .sugar-crystal {
+            position: fixed;
+            width: 6px;
+            height: 6px;
+            background: rgba(255, 105, 180, 0.7);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: float 15s infinite linear;
+            z-index: 1;
+            box-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.7;
+            }
+            90% {
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Main Container */
+        .board-container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            z-index: 10;
+        }
+
+        /* Board Title */
+        .board-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background: linear-gradient(90deg, #ff69b4, #00ffff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-align: center;
+            text-shadow: 0 0 30px rgba(255, 105, 180, 0.5);
+        }
+
+        /* Card Grid */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        /* Card Container */
+        .card-container {
+            height: 320px;
+            perspective: 1000px;
+            position: relative;
+        }
+
+        /* Card */
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s;
+            cursor: pointer;
+        }
+
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        /* Card Face */
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 16px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: linear-gradient(135deg, rgba(10, 0, 18, 0.95), rgba(42, 0, 84, 0.95));
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .card-face::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 14px;
+            padding: 2px;
+            background: linear-gradient(135deg, #ff69b4, #00ffff);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            z-index: -1;
+        }
+
+        .card-front {
+            z-index: 2;
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+        }
+
+        /* Card Content */
+        .card-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+        }
+
+        .food-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #ffffff;
+            text-align: center;
+        }
+
+        .tagline {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            font-weight: 400;
+            margin-bottom: 20px;
+            opacity: 0.8;
+            text-align: center;
+            font-style: italic;
+        }
+
+        .flip-button {
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 30px;
+            background: linear-gradient(135deg, #ff69b4, #00ffff);
+            color: #0a0012;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            align-self: center;
+            margin-top: auto;
+        }
+
+        .flip-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.5);
+        }
+
+        /* Sugar Content */
+        .sugar-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .sugar-amount {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #ff69b4, #ff1493);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 20px rgba(255, 105, 180, 0.5);
+        }
+
+        .sugar-label {
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .teaspoon-container {
+            display: flex;
+            justify-content: center;
+            margin: 15px 0;
+        }
+
+        .teaspoon {
+            width: 30px;
+            height: 8px;
+            background: linear-gradient(90deg, #ff69b4, #ff1493);
+            border-radius: 4px;
+            margin: 0 3px;
+            box-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
+        }
+
+        .fact-line {
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            opacity: 0.9;
+            text-align: center;
+            margin-top: auto;
+        }
+
+        /* Spoon Scale Section */
+        .spoon-scale {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(10, 0, 18, 0.95), rgba(42, 0, 84, 0.95));
+            border-radius: 16px;
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .spoon-scale::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 14px;
+            padding: 2px;
+            background: linear-gradient(135deg, #ff69b4, #00ffff);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            z-index: -1;
+        }
+
+        .scale-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+            background: linear-gradient(90deg, #ff69b4, #00ffff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .scale-text {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.1rem;
+            text-align: center;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .spoons-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .spoon-large {
+            width: 60px;
+            height: 15px;
+            background: linear-gradient(90deg, #ff69b4, #ff1493);
+            border-radius: 7px;
+            box-shadow: 0 0 15px rgba(255, 105, 180, 0.5);
+            opacity: 0;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .hidden-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 1s ease;
+            background: linear-gradient(90deg, #ff69b4, #00ffff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hidden-text.show {
+            opacity: 1;
+        }
+
+        /* Flip Back Button */
+        .flip-back-button {
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 30px;
+            background: linear-gradient(135deg, #00ffff, #4169e1);
+            color: #0a0012;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            align-self: center;
+            margin-top: 15px;
+        }
+
+        .flip-back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 255, 0.5);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .board-title {
+                font-size: 2rem;
+            }
+            
+            .card-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 20px;
+            }
+            
+            .food-name {
+                font-size: 1.3rem;
+            }
+            
+            .sugar-amount {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sugar Crystal Particles -->
+    <div id="particleContainer"></div>
+
+    <!-- Main Container -->
+    <div class="board-container">
+        <h1 class="board-title">Sweet Illusion — The Sugar Truth Board</h1>
+        
+        <!-- Card Grid -->
+        <div class="card-grid">
+            <!-- Card 1: Brown Bread -->
+            <div class="card-container">
+                <div class="card" id="card1">
+                    <div class="card-face card-front">
+                        <div class="card-content">
+                            <h2 class="food-name">Brown Bread</h2>
+                            <p class="tagline">Seems harmless, right?</p>
+                            <button class="flip-button" onclick="flipCard('card1')">Flip to Reveal</button>
+                        </div>
+                    </div>
+                    <div class="card-face card-back">
+                        <div class="card-content">
+                            <div class="sugar-content">
+                                <div class="sugar-amount">5.4 tsp</div>
+                                <div class="sugar-label">sugar per 100g</div>
+                                <div class="teaspoon-container">
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                </div>
+                            </div>
+                            <p class="fact-line">"Marketed as 'healthy', but colored with caramel and packed with refined sugar."</p>
+                            <button class="flip-back-button" onclick="flipCard('card1')">Flip Back</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 2: Tomato Ketchup -->
+            <div class="card-container">
+                <div class="card" id="card2">
+                    <div class="card-face card-front">
+                        <div class="card-content">
+                            <h2 class="food-name">Tomato Ketchup</h2>
+                            <p class="tagline">Seems harmless, right?</p>
+                            <button class="flip-button" onclick="flipCard('card2')">Flip to Reveal</button>
+                        </div>
+                    </div>
+                    <div class="card-face card-back">
+                        <div class="card-content">
+                            <div class="sugar-content">
+                                <div class="sugar-amount">7.2 tsp</div>
+                                <div class="sugar-label">sugar per 100g</div>
+                                <div class="teaspoon-container">
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                </div>
+                            </div>
+                            <p class="fact-line">"Sugar > Tomatoes. 40% of your spoonful is pure sweetener."</p>
+                            <button class="flip-back-button" onclick="flipCard('card2')">Flip Back</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 3: Breakfast Cereal -->
+            <div class="card-container">
+                <div class="card" id="card3">
+                    <div class="card-face card-front">
+                        <div class="card-content">
+                            <h2 class="food-name">Breakfast Cereal</h2>
+                            <p class="tagline">Seems harmless, right?</p>
+                            <button class="flip-button" onclick="flipCard('card3')">Flip to Reveal</button>
+                        </div>
+                    </div>
+                    <div class="card-face card-back">
+                        <div class="card-content">
+                            <div class="sugar-content">
+                                <div class="sugar-amount">8.1 tsp</div>
+                                <div class="sugar-label">sugar per 100g</div>
+                                <div class="teaspoon-container">
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                </div>
+                            </div>
+                            <p class="fact-line">"Your 'healthy start' may have more sugar than dessert."</p>
+                            <button class="flip-back-button" onclick="flipCard('card3')">Flip Back</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 4: Flavored Yogurt -->
+            <div class="card-container">
+                <div class="card" id="card4">
+                    <div class="card-face card-front">
+                        <div class="card-content">
+                            <h2 class="food-name">Flavored Yogurt</h2>
+                            <p class="tagline">Seems harmless, right?</p>
+                            <button class="flip-button" onclick="flipCard('card4')">Flip to Reveal</button>
+                        </div>
+                    </div>
+                    <div class="card-face card-back">
+                        <div class="card-content">
+                            <div class="sugar-content">
+                                <div class="sugar-amount">6.5 tsp</div>
+                                <div class="sugar-label">sugar per 100g</div>
+                                <div class="teaspoon-container">
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                </div>
+                            </div>
+                            <p class="fact-line">"Disguised as protein food but loaded like a dessert."</p>
+                            <button class="flip-back-button" onclick="flipCard('card4')">Flip Back</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 5: Granola Bar -->
+            <div class="card-container">
+                <div class="card" id="card5">
+                    <div class="card-face card-front">
+                        <div class="card-content">
+                            <h2 class="food-name">Granola Bar</h2>
+                            <p class="tagline">Seems harmless, right?</p>
+                            <button class="flip-button" onclick="flipCard('card5')">Flip to Reveal</button>
+                        </div>
+                    </div>
+                    <div class="card-face card-back">
+                        <div class="card-content">
+                            <div class="sugar-content">
+                                <div class="sugar-amount">5.8 tsp</div>
+                                <div class="sugar-label">sugar per 100g</div>
+                                <div class="teaspoon-container">
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                </div>
+                            </div>
+                            <p class="fact-line">"Energy? More like energy spike — most of it's syrup."</p>
+                            <button class="flip-back-button" onclick="flipCard('card5')">Flip Back</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 6: Protein Shake -->
+            <div class="card-container">
+                <div class="card" id="card6">
+                    <div class="card-face card-front">
+                        <div class="card-content">
+                            <h2 class="food-name">Protein Shake</h2>
+                            <p class="tagline">Seems harmless, right?</p>
+                            <button class="flip-button" onclick="flipCard('card6')">Flip to Reveal</button>
+                        </div>
+                    </div>
+                    <div class="card-face card-back">
+                        <div class="card-content">
+                            <div class="sugar-content">
+                                <div class="sugar-amount">4.6 tsp</div>
+                                <div class="sugar-label">sugar per 100g</div>
+                                <div class="teaspoon-container">
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                </div>
+                            </div>
+                            <p class="fact-line">"Hidden under 'natural flavor' and 'maltodextrin'."</p>
+                            <button class="flip-back-button" onclick="flipCard('card6')">Flip Back</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 7: Packaged Fruit Juice -->
+            <div class="card-container">
+                <div class="card" id="card7">
+                    <div class="card-face card-front">
+                        <div class="card-content">
+                            <h2 class="food-name">Packaged Fruit Juice</h2>
+                            <p class="tagline">Seems harmless, right?</p>
+                            <button class="flip-button" onclick="flipCard('card7')">Flip to Reveal</button>
+                        </div>
+                    </div>
+                    <div class="card-face card-back">
+                        <div class="card-content">
+                            <div class="sugar-content">
+                                <div class="sugar-amount">9.8 tsp</div>
+                                <div class="sugar-label">sugar per 100g</div>
+                                <div class="teaspoon-container">
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                </div>
+                            </div>
+                            <p class="fact-line">"No pulp, no fiber — just liquified fructose."</p>
+                            <button class="flip-back-button" onclick="flipCard('card7')">Flip Back</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 8: Instant Oats Pack -->
+            <div class="card-container">
+                <div class="card" id="card8">
+                    <div class="card-face card-front">
+                        <div class="card-content">
+                            <h2 class="food-name">Instant Oats Pack</h2>
+                            <p class="tagline">Seems harmless, right?</p>
+                            <button class="flip-button" onclick="flipCard('card8')">Flip to Reveal</button>
+                        </div>
+                    </div>
+                    <div class="card-face card-back">
+                        <div class="card-content">
+                            <div class="sugar-content">
+                                <div class="sugar-amount">4.2 tsp</div>
+                                <div class="sugar-label">sugar per 100g</div>
+                                <div class="teaspoon-container">
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                </div>
+                            </div>
+                            <p class="fact-line">"Tiny oats, big sugar. Flavors mean added sweeteners."</p>
+                            <button class="flip-back-button" onclick="flipCard('card8')">Flip Back</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 9: Peanut Butter -->
+            <div class="card-container">
+                <div class="card" id="card9">
+                    <div class="card-face card-front">
+                        <div class="card-content">
+                            <h2 class="food-name">Peanut Butter</h2>
+                            <p class="tagline">Seems harmless, right?</p>
+                            <button class="flip-button" onclick="flipCard('card9')">Flip to Reveal</button>
+                        </div>
+                    </div>
+                    <div class="card-face card-back">
+                        <div class="card-content">
+                            <div class="sugar-content">
+                                <div class="sugar-amount">3.5 tsp</div>
+                                <div class="sugar-label">sugar per 100g</div>
+                                <div class="teaspoon-container">
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                </div>
+                            </div>
+                            <p class="fact-line">"Protein + Sugar combo = snack trap."</p>
+                            <button class="flip-back-button" onclick="flipCard('card9')">Flip Back</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 10: Salad Dressing -->
+            <div class="card-container">
+                <div class="card" id="card10">
+                    <div class="card-face card-front">
+                        <div class="card-content">
+                            <h2 class="food-name">Salad Dressing</h2>
+                            <p class="tagline">Seems harmless, right?</p>
+                            <button class="flip-button" onclick="flipCard('card10')">Flip to Reveal</button>
+                        </div>
+                    </div>
+                    <div class="card-face card-back">
+                        <div class="card-content">
+                            <div class="sugar-content">
+                                <div class="sugar-amount">5.0 tsp</div>
+                                <div class="sugar-label">sugar per 100g</div>
+                                <div class="teaspoon-container">
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                </div>
+                            </div>
+                            <p class="fact-line">"'Savory'? Nah. Half the flavor's from sugar syrup."</p>
+                            <button class="flip-back-button" onclick="flipCard('card10')">Flip Back</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 11: Dry Fruits Mix -->
+            <div class="card-container">
+                <div class="card" id="card11">
+                    <div class="card-face card-front">
+                        <div class="card-content">
+                            <h2 class="food-name">Dry Fruits Mix</h2>
+                            <p class="tagline">Seems harmless, right?</p>
+                            <button class="flip-button" onclick="flipCard('card11')">Flip to Reveal</button>
+                        </div>
+                    </div>
+                    <div class="card-face card-back">
+                        <div class="card-content">
+                            <div class="sugar-content">
+                                <div class="sugar-amount">7.4 tsp</div>
+                                <div class="sugar-label">sugar per 100g</div>
+                                <div class="teaspoon-container">
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                </div>
+                            </div>
+                            <p class="fact-line">"They're candied, not dried. Real dry fruits don't glisten — added sugar makes them shine."</p>
+                            <button class="flip-back-button" onclick="flipCard('card11')">Flip Back</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 12: Energy Drink -->
+            <div class="card-container">
+                <div class="card" id="card12">
+                    <div class="card-face card-front">
+                        <div class="card-content">
+                            <h2 class="food-name">Energy Drink</h2>
+                            <p class="tagline">Seems harmless, right?</p>
+                            <button class="flip-button" onclick="flipCard('card12')">Flip to Reveal</button>
+                        </div>
+                    </div>
+                    <div class="card-face card-back">
+                        <div class="card-content">
+                            <div class="sugar-content">
+                                <div class="sugar-amount">10.3 tsp</div>
+                                <div class="sugar-label">sugar per 100g</div>
+                                <div class="teaspoon-container">
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                    <div class="teaspoon"></div>
+                                </div>
+                            </div>
+                            <p class="fact-line">"Labeled as performance fuel — but it's just liquid candy with caffeine."</p>
+                            <button class="flip-back-button" onclick="flipCard('card12')">Flip Back</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Spoon Scale Section -->
+        <div class="spoon-scale">
+            <h2 class="scale-title">Spoon by Spoon</h2>
+            <p class="scale-text">Each spoon equals 4 grams of sugar. Still think you're sugar-free?</p>
+            <div class="spoons-container" id="spoonsContainer"></div>
+            <p class="hidden-text" id="hiddenText">SWEET ILLUSION</p>
+        </div>
+    </div>
+
+    <script>
+        // Create sugar crystal particles
+        function createSugarCrystals() {
+            const container = document.getElementById('particleContainer');
+            for (let i = 0; i < 40; i++) {
+                const crystal = document.createElement('div');
+                crystal.className = 'sugar-crystal';
+                crystal.style.left = Math.random() * 100 + '%';
+                crystal.style.animationDelay = Math.random() * 15 + 's';
+                crystal.style.animationDuration = (15 + Math.random() * 10) + 's';
+                container.appendChild(crystal);
+            }
+        }
+
+        createSugarCrystals();
+
+        // Flip card function
+        function flipCard(cardId) {
+            const card = document.getElementById(cardId);
+            card.classList.toggle('flipped');
+        }
+
+        // Add hover effect to cards
+        document.querySelectorAll('.card-container').forEach(container => {
+            container.addEventListener('mouseenter', function() {
+                // Make nearby crystals sparkle
+                document.querySelectorAll('.sugar-crystal').forEach(crystal => {
+                    const rect = crystal.getBoundingClientRect();
+                    const containerRect = container.getBoundingClientRect();
+                    
+                    // Calculate distance between crystal and container
+                    const distance = Math.sqrt(
+                        Math.pow(rect.left - containerRect.left, 2) + 
+                        Math.pow(rect.top - containerRect.top, 2)
+                    );
+                    
+                    // If crystal is close enough, make it sparkle
+                    if (distance < 300) {
+                        crystal.style.boxShadow = '0 0 20px rgba(255, 105, 180, 0.9)';
+                        crystal.style.transform = 'scale(1.5)';
+                        
+                        // Reset after animation
+                        setTimeout(() => {
+                            crystal.style.boxShadow = '0 0 10px rgba(255, 105, 180, 0.5)';
+                            crystal.style.transform = 'scale(1)';
+                        }, 1000);
+                    }
+                });
+            });
+        });
+
+        // Create spoon animation on scroll
+        let spoonsCreated = false;
+        window.addEventListener('scroll', function() {
+            const spoonScale = document.querySelector('.spoon-scale');
+            const spoonScalePosition = spoonScale.getBoundingClientRect().top;
+            const screenPosition = window.innerHeight / 2;
+            
+            if (spoonScalePosition < screenPosition && !spoonsCreated) {
+                spoonsCreated = true;
+                createSpoons();
+            }
+        });
+
+        function createSpoons() {
+            const spoonsContainer = document.getElementById('spoonsContainer');
+            const hiddenText = document.getElementById('hiddenText');
+            
+            // Create 12 spoons with animation delays (updated for 12 cards)
+            for (let i = 0; i < 12; i++) {
+                const spoon = document.createElement('div');
+                spoon.className = 'spoon-large';
+                spoon.style.animationDelay = `${i * 0.2}s`;
+                spoonsContainer.appendChild(spoon);
+            }
+            
+            // Show hidden text after spoons are created
+            setTimeout(() => {
+                hiddenText.classList.add('show');
+            }, 2500);
+        }
+    </script>
+</body>
+</html>
